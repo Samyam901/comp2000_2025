@@ -4,9 +4,13 @@ import java.awt.Polygon;
 import java.util.List;
 
 public abstract class Actor {
-  Color color;
-  Cell loc;
-  List<Polygon> display;
+  protected Color color;
+  protected Cell currentCell;
+  protected List<Polygon> display;
+
+  public Actor(Cell startCell) {
+      this.currentCell = startCell;
+  }
 
   public void paint(Graphics g) {
     for(Polygon p: display) {
