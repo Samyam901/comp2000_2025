@@ -4,11 +4,16 @@ import java.util.Optional;
 
 public class Grid {
   Cell[][] cells = new Cell[20][20];
+  private static final int GRID_MARGIN = 50; // Margin from the window edges
   
   public Grid() {
+    // Calculate the starting position to center the grid
+    int startX = GRID_MARGIN;
+    int startY = GRID_MARGIN;
+    
     for(int i=0; i<cells.length; i++) {
       for(int j=0; j<cells[i].length; j++) {
-        cells[i][j] = new Cell(colToLabel(i), j, 10+Cell.size*i, 10+Cell.size*j);
+        cells[i][j] = new Cell(colToLabel(i), j, startX + Cell.size*i, startY + Cell.size*j);
       }
     }
   }

@@ -16,7 +16,10 @@ public class Main extends JFrame {
         Stage stage = new Stage();
         
         public Canvas() {
-            setPreferredSize(new Dimension(1024, 720));
+            // Calculate window size based on grid size and margins
+            int windowWidth = 800;  // Enough space for grid and score display
+            int windowHeight = 700; // Enough space for grid and margins
+            setPreferredSize(new Dimension(windowWidth, windowHeight));
             setFocusable(true);
             addKeyListener(new KeyAdapter() {
                 @Override
