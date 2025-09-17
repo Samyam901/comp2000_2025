@@ -11,12 +11,14 @@ import java.util.Random;
 
 public class Stage {
     private static final int MAX_TOP_SCORES = 5;
-    Grid grid;
-    Snake snake;
-    Apple apple;
-    boolean gameOver;
-    int score;
-    int highScore;
+    private Grid grid;
+    private GameCollection<Snake> snakes;
+    private GameCollection<Apple> apples;
+    private Snake snake;
+    private Apple apple;
+    private boolean gameOver;
+    private int score;
+    private int highScore;
     private Random random;
     private long lastMoveTime;
     private long moveDelay = 200; // milliseconds, starting speed
@@ -32,8 +34,13 @@ public class Stage {
         highScore = 0;
         topScores = new ArrayList<>();
         
+        // Initialize collections
+        snakes = new GameCollection<>();
+        apples = new GameCollection<>();
+        
         // Initialize snake at the center
         snake = new Snake(grid.cellAtColRow(10, 10).get());
+        snakes.add(snake);
         spawnApple();
         
         lastMoveTime = System.currentTimeMillis();
@@ -50,7 +57,13 @@ public class Stage {
             }
         } while (cell == null || snake.contains(cell));
         
+        // Remove old apple if exists
+        if (apple != null) {
+            apples.remove(apple);
+        }
+        
         apple = new Apple(cell);
+        apples.add(apple);
     }
     
     private void updateTopScores() {
