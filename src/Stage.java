@@ -21,9 +21,9 @@ public class Stage {
     private int highScore;
     private Random random;
     private long lastMoveTime;
-    private long moveDelay = 200; // milliseconds, starting speed
-    private static final long MIN_MOVE_DELAY = 50; // maximum speed
-    private static final int SPEED_INCREASE = 10; // ms faster per apple
+    private long moveDelay = 200;
+    private static final long MIN_MOVE_DELAY = 50;
+    private static final int SPEED_INCREASE = 10;
     private List<Integer> topScores;
 
     public Stage() {
@@ -35,7 +35,6 @@ public class Stage {
         topScores = new ArrayList<>();
         backgroundBirds = new ArrayList<>();
         
-        // Initialize background birds
         for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
             Cell randomCell = grid.cellAtColRow(
                 random.nextInt(20),
@@ -44,7 +43,6 @@ public class Stage {
             backgroundBirds.add(new Bird(randomCell));
         }
         
-        // Initialize snake at the center
         snake = new Snake(grid.cellAtColRow(10, 10).get());
         spawnApple();
         
@@ -62,13 +60,7 @@ public class Stage {
             }
         } while (cell == null || snake.contains(cell));
         
-        // Remove old apple if exists
-        if (apple != null) {
-            apples.remove(apple);
-        }
-        
         apple = new Apple(cell);
-        apples.add(apple);
     }
     
     private void updateTopScores() {
@@ -85,12 +77,17 @@ public class Stage {
     public void update() {
         if (gameOver) return;
         
+        if (backgroundBirds != null) {
+            for (Bird bird : backgroundBirds) {
+                bird.update(grid);
+            }
+        }
+        
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastMoveTime >= moveDelay) {
             snake.move(grid);
             lastMoveTime = currentTime;
             
-            // Check for wall collision
             Cell head = snake.getHead();
             if (head == null) {
                 gameOver = true;
@@ -98,20 +95,16 @@ public class Stage {
                 return;
             }
             
-            // Check for self collision
             if (snake.checkCollision()) {
                 gameOver = true;
                 updateTopScores();
                 return;
             }
             
-            // Check for apple collision
             if (head.equals(apple.currentCell)) {
                 score += 10;
                 snake.grow();
                 spawnApple();
-                
-                // Increase speed
                 moveDelay = Math.max(MIN_MOVE_DELAY, moveDelay - SPEED_INCREASE);
             }
         }
@@ -137,21 +130,22 @@ public class Stage {
     }
 
     public void paint(Graphics g, Point mouseLoc) {
-        // Draw background
-        g.setColor(new Color(50, 150, 50)); // Forest green background
+        g.setColor(new Color(50, 150, 50));
         g.fillRect(0, 0, 1024, 720);
+        
+        for (Bird bird : backgroundBirds) {
+            bird.paint(g);
+        }
         
         grid.paint(g, mouseLoc);
         snake.paint(g);
         apple.paint(g);
         
-        // Draw scoreboard
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 10, 30);
         g.drawString("High Score: " + highScore, 10, 60);
         
-        // Draw top scores
         g.setFont(new Font("Arial", Font.PLAIN, 16));
         g.drawString("Top Scores:", 800, 30);
         for (int i = 0; i < topScores.size(); i++) {
@@ -159,11 +153,9 @@ public class Stage {
         }
         
         if (gameOver) {
-            // Semi-transparent overlay
             g.setColor(new Color(0, 0, 0, 150));
             g.fillRect(0, 0, 1024, 720);
             
-            // Game Over text
             g.setFont(new Font("Arial", Font.BOLD, 40));
             g.setColor(Color.WHITE);
             g.drawString("Game Over!", 400, 300);
