@@ -11,11 +11,11 @@ import java.util.Random;
 
 public class Stage {
     private static final int MAX_TOP_SCORES = 5;
+    private static final int NUM_BACKGROUND_BIRDS = 5;
     private Grid grid;
-    private GameCollection<Snake> snakes;
-    private GameCollection<Apple> apples;
     private Snake snake;
     private Apple apple;
+    private List<Bird> backgroundBirds;
     private boolean gameOver;
     private int score;
     private int highScore;
@@ -33,14 +33,19 @@ public class Stage {
         score = 0;
         highScore = 0;
         topScores = new ArrayList<>();
+        backgroundBirds = new ArrayList<>();
         
-        // Initialize collections
-        snakes = new GameCollection<>();
-        apples = new GameCollection<>();
+        // Initialize background birds
+        for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
+            Cell randomCell = grid.cellAtColRow(
+                random.nextInt(20),
+                random.nextInt(20)
+            ).get();
+            backgroundBirds.add(new Bird(randomCell));
+        }
         
         // Initialize snake at the center
         snake = new Snake(grid.cellAtColRow(10, 10).get());
-        snakes.add(snake);
         spawnApple();
         
         lastMoveTime = System.currentTimeMillis();
@@ -79,11 +84,6 @@ public class Stage {
     
     public void update() {
         if (gameOver) return;
-        
-        // Update background birds
-        for (Bird bird : backgroundBirds) {
-            bird.update(grid);
-        }
         
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastMoveTime >= moveDelay) {
