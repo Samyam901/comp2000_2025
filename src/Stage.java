@@ -18,12 +18,14 @@ public class Stage {
     private List<Bird> backgroundBirds;
     private boolean gameOver;
     private int score;
-    private int highScore;
     private Random random;
     private long lastMoveTime;
+    private long lastDogSpawnTime;
+    private Dog currentDog;
     private long moveDelay = 200;
     private static final long MIN_MOVE_DELAY = 50;
     private static final int SPEED_INCREASE = 10;
+    private static final long DOG_SPAWN_DELAY = 15000; // Spawn a new dog every 15 seconds
     private List<Integer> topScores;
 
     public Stage() {
@@ -31,7 +33,6 @@ public class Stage {
         random = new Random();
         gameOver = false;
         score = 0;
-        highScore = 0;
         topScores = new ArrayList<>();
         backgroundBirds = new ArrayList<>();
         
@@ -47,9 +48,21 @@ public class Stage {
         spawnApple();
         
         lastMoveTime = System.currentTimeMillis();
+        lastDogSpawnTime = System.currentTimeMillis();
     }
     
     private void spawnApple() {
+        Cell cell = getRandomEmptyCell();
+        apple = new Apple(cell);
+    }
+    
+    private void spawnDog() {
+        Cell cell = getRandomEmptyCell();
+        currentDog = new Dog(cell);
+        lastDogSpawnTime = System.currentTimeMillis();
+    }
+    
+    private Cell getRandomEmptyCell() {
         Cell cell = null;
         do {
             int col = random.nextInt(20);
@@ -58,9 +71,11 @@ public class Stage {
             if (optionalCell.isPresent()) {
                 cell = optionalCell.get();
             }
-        } while (cell == null || snake.contains(cell));
+        } while (cell == null || snake.contains(cell) || 
+                (apple != null && cell.equals(apple.currentCell)) ||
+                (currentDog != null && cell.equals(currentDog.currentCell)));
         
-        apple = new Apple(cell);
+        return cell;
     }
     
     private void updateTopScores() {
@@ -69,8 +84,9 @@ public class Stage {
         if (topScores.size() > MAX_TOP_SCORES) {
             topScores = topScores.subList(0, MAX_TOP_SCORES);
         }
-        if (!topScores.isEmpty()) {
-            highScore = topScores.get(0);
+        // Keep the list sorted and trimmed
+        if (topScores.size() > MAX_TOP_SCORES) {
+            topScores = topScores.subList(0, MAX_TOP_SCORES);
         }
     }
     
@@ -84,6 +100,17 @@ public class Stage {
         }
         
         long currentTime = System.currentTimeMillis();
+        
+        // Check if it's time to spawn a new dog
+        if (currentDog == null && currentTime - lastDogSpawnTime >= DOG_SPAWN_DELAY) {
+            spawnDog();
+        }
+        
+        // Check if current dog should expire
+        if (currentDog != null && currentDog.isExpired()) {
+            currentDog = null;
+        }
+        
         if (currentTime - lastMoveTime >= moveDelay) {
             snake.move(grid);
             lastMoveTime = currentTime;
@@ -107,11 +134,22 @@ public class Stage {
                 spawnApple();
                 moveDelay = Math.max(MIN_MOVE_DELAY, moveDelay - SPEED_INCREASE);
             }
+            
+            if (currentDog != null && head.equals(currentDog.currentCell)) {
+                score += Dog.BONUS_POINTS;
+                currentDog = null;
+                lastDogSpawnTime = currentTime;
+            }
         }
     }
     
     public void handleKeyPress(KeyEvent e) {
-        if (gameOver) return;
+        if (gameOver) {
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                resetGame();
+            }
+            return;
+        }
         
         switch (e.getKeyCode()) {
             case KeyEvent.VK_UP:
@@ -128,6 +166,27 @@ public class Stage {
                 break;
         }
     }
+    
+    private void resetGame() {
+        snake = new Snake(grid.cellAtColRow(10, 10).get());
+        gameOver = false;
+        score = 0;
+        moveDelay = 200;
+        currentDog = null;
+        backgroundBirds.clear();
+        
+        for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
+            Cell randomCell = grid.cellAtColRow(
+                random.nextInt(20),
+                random.nextInt(20)
+            ).get();
+            backgroundBirds.add(new Bird(randomCell));
+        }
+        
+        spawnApple();
+        lastMoveTime = System.currentTimeMillis();
+        lastDogSpawnTime = System.currentTimeMillis();
+    }
 
     public void paint(Graphics g, Point mouseLoc) {
         g.setColor(new Color(50, 150, 50));
@@ -140,11 +199,13 @@ public class Stage {
         grid.paint(g, mouseLoc);
         snake.paint(g);
         apple.paint(g);
+        if (currentDog != null) {
+            currentDog.paint(g);
+        }
         
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 10, 30);
-        g.drawString("High Score: " + highScore, 10, 60);
         
         g.setFont(new Font("Arial", Font.PLAIN, 16));
         g.drawString("Top Scores:", 800, 30);
