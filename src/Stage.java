@@ -80,6 +80,11 @@ public class Stage {
     public void update() {
         if (gameOver) return;
         
+        // Update background birds
+        for (Bird bird : backgroundBirds) {
+            bird.update(grid);
+        }
+        
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastMoveTime >= moveDelay) {
             snake.move(grid);
