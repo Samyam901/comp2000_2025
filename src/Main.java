@@ -16,10 +16,10 @@ public class Main extends JFrame {
         Stage stage = new Stage();
         
         public Canvas() {
-            // Calculate window size based on grid size and margins
-            int windowWidth = 800;  // Enough space for grid and score display
-            int windowHeight = 700; // Enough space for grid and margins
-            setPreferredSize(new Dimension(windowWidth, windowHeight));
+            // Get screen dimensions but leave room for window borders
+            Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            // Set window slightly smaller than screen to account for window borders
+            setPreferredSize(new Dimension(screenSize.width - 50, screenSize.height - 50));
             setFocusable(true);
             addKeyListener(new KeyAdapter() {
                 @Override
@@ -43,6 +43,7 @@ public class Main extends JFrame {
         canvas = new Canvas();
         this.setContentPane(canvas);
         this.pack();
+        this.setLocationRelativeTo(null); // Center on screen
         this.setVisible(true);
     }
 

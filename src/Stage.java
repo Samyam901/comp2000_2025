@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -190,7 +191,7 @@ public class Stage {
 
     public void paint(Graphics g, Point mouseLoc) {
         g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, 1024, 720);
+        g.fillRect(0, 0, 2000, 1200); // Large enough to cover most screens in windowed mode
         
         for (Bird bird : backgroundBirds) {
             bird.paint(g);
