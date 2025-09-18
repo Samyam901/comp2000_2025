@@ -9,6 +9,7 @@ public class Apple extends Actor {
     @Override
     public void paint(Graphics g) {
         g.setColor(Color.RED);
-        g.fillOval(currentCell.x + 5, currentCell.y + 5, currentCell.size - 10, currentCell.size - 10);
+        int cellSize = Cell.getCellSize(); // Get current cell size
+        g.fillOval(currentCell.x + 5, currentCell.y + 5, cellSize - 10, cellSize - 10);
     }
 }

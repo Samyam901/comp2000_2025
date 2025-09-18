@@ -4,7 +4,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 
 public class Cell extends Rectangle {
-  static int size = 30;
+  protected static int size = 30; // Default size
   char col;
   int row;
 
@@ -12,6 +12,18 @@ public class Cell extends Rectangle {
     super(x, y, size, size);
     col = inCol;
     row = inRow;
+  }
+  
+  public void resize(int newSize) {
+    width = height = newSize;
+  }
+  
+  public static void setCellSize(int newSize) {
+    size = newSize;
+  }
+  
+  public static int getCellSize() {
+    return size;
   }
 
   public void paint(Graphics g, Point mousePos) {

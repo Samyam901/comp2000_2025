@@ -85,12 +85,13 @@ public class Snake extends Actor {
     @Override
     public void paint(Graphics g) {
         g.setColor(Color.GREEN);
+        int cellSize = Cell.getCellSize(); // Get current cell size
         for (Cell cell : body) {
-            g.fillRect(cell.x + 2, cell.y + 2, cell.size - 4, cell.size - 4);
+            g.fillRect(cell.x + 2, cell.y + 2, cellSize - 4, cellSize - 4);
         }
         // Paint head in darker green
         Cell head = body.get(0);
         g.setColor(Color.GREEN.darker());
-        g.fillRect(head.x + 2, head.y + 2, head.size - 4, head.size - 4);
+        g.fillRect(head.x + 2, head.y + 2, cellSize - 4, cellSize - 4);
     }
 }
