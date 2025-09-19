@@ -15,22 +15,31 @@ import java.util.Random;
 public class Stage {
     private static final int MAX_TOP_SCORES = 5;
     private static final int NUM_BACKGROUND_BIRDS = 5;
+    private static final long MIN_MOVE_DELAY = 50;
+    private static final int SPEED_INCREASE = 10;
+    private static final long DOG_SPAWN_DELAY = 15000; // Spawn a new dog every 15 seconds
+    
     private Grid grid;
     private Snake snake;
     private Apple apple;
     private GameCollection<Bird> backgroundBirds;
-    private GameCollection<PowerUp> powerUps;
+    private GameCollection<PowerUpActor> powerUps;
     private boolean gameOver;
     private int score;
     private Random random;
     private long lastMoveTime;
     private long lastDogSpawnTime;
     private Dog currentDog;
-    private long moveDelay = 200;
-    private static final long MIN_MOVE_DELAY = 50;
-    private static final int SPEED_INCREASE = 10;
-    private static final long DOG_SPAWN_DELAY = 15000; // Spawn a new dog every 15 seconds
+    private static long moveDelay = 200;
     private List<Integer> topScores;
+    
+    public static long getMoveDelay() {
+        return moveDelay;
+    }
+    
+    public static void setMoveDelay(long delay) {
+        moveDelay = Math.max(MIN_MOVE_DELAY, delay);
+    }
 
     public Stage() {
         grid = new Grid();
@@ -39,7 +48,7 @@ public class Stage {
         score = 0;
         topScores = new ArrayList<>();
         backgroundBirds = new GameCollection<>(Bird.class);
-        powerUps = new GameCollection<>(PowerUp.class);
+        powerUps = new GameCollection<>(PowerUpActor.class);
         
         for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
             Cell randomCell = grid.cellAtColRow(
@@ -63,7 +72,8 @@ public class Stage {
     
     private void spawnDog() {
         Cell cell = getRandomEmptyCell();
-        currentDog = new Dog(cell);
+        Dog dog = new Dog(cell);
+        powerUps.add(dog);
         lastDogSpawnTime = System.currentTimeMillis();
     }
     
@@ -140,6 +150,23 @@ public class Stage {
                 moveDelay = Math.max(MIN_MOVE_DELAY, moveDelay - SPEED_INCREASE);
             }
             
+            // Check for power-up collisions
+            if (powerUps != null) {
+                powerUps.getAll().removeIf(powerUp -> {
+                    if (powerUp.isExpired()) {
+                        powerUps.remove(powerUp);
+                        return true;
+                    }
+                    if (head.equals(powerUp.currentCell)) {
+                        score += powerUp.getPointsValue();
+                        powerUp.applyEffect(snake);
+                        powerUps.remove(powerUp);
+                        return true;
+                    }
+                    return false;
+                });
+            }
+            
             if (currentDog != null && head.equals(currentDog.currentCell)) {
                 score += Dog.BONUS_POINTS;
                 currentDog = null;
@@ -179,6 +206,7 @@ public class Stage {
         moveDelay = 200;
         currentDog = null;
         backgroundBirds.clear();
+        powerUps.clear();
         
         for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
             Cell randomCell = grid.cellAtColRow(
@@ -216,8 +244,10 @@ public class Stage {
         grid.paint(g, mouseLoc);
         snake.paint(g);
         apple.paint(g);
-        if (currentDog != null) {
-            currentDog.paint(g);
+        
+        // Paint all power-ups
+        if (powerUps != null) {
+            powerUps.paintAll(g);
         }
         
         g.setColor(Color.WHITE);
