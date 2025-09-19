@@ -3,16 +3,14 @@ import java.awt.Polygon;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Cat extends Actor implements PowerUp {
+public class Cat extends PowerUpActor {
     private static final Color CAT_COLOR = new Color(138, 43, 226); // Purple for speed boost
-    private long spawnTime;
     private static final int SPEED_BOOST_DURATION = 5000; // 5 seconds
     private static final int SPEED_BOOST_AMOUNT = 50; // Reduce delay by 50ms
     private static final int BONUS_POINTS = 20; // Points awarded for collecting
     
     public Cat(Cell inLoc) {
         super(inLoc);
-        this.spawnTime = System.currentTimeMillis();
         color = CAT_COLOR;
         display = new ArrayList<>();
         updateDisplay();
@@ -47,18 +45,17 @@ public class Cat extends Actor implements PowerUp {
             float alpha = (float)(Math.sin((currentTime - spawnTime) / 200.0) + 1) / 2;
             g.setColor(new Color(color.getRed()/255f, color.getGreen()/255f, 
                                color.getBlue()/255f, alpha));
+            for (Polygon shape : display) {
+                g.fillPolygon(shape);
+            }
         }
     }
     
     @Override
-    public boolean isExpired() {
-        return System.currentTimeMillis() - spawnTime > 12000; // Disappear after 12 seconds
-    }
-    
-    @Override
     public void applyEffect(Snake snake) {
-        // Increase snake speed temporarily
-        snake.setMoveDelay(snake.getMoveDelay() - SPEED_BOOST_AMOUNT);
+        // Store current move delay and apply speed boost
+        long currentDelay = Stage.getMoveDelay();
+        Stage.setMoveDelay(Math.max(50, currentDelay - SPEED_BOOST_AMOUNT));
     }
     
     @Override
@@ -74,8 +71,10 @@ public class Cat extends Actor implements PowerUp {
     @Override
     public String getEffectDescription() {
         return "Speed Boost: Move " + SPEED_BOOST_AMOUNT + "ms faster for " + (SPEED_BOOST_DURATION/1000) + " seconds!";
+    }
     
-    public boolean isExpired() {
-        return System.currentTimeMillis() - spawnTime > 15000; // Disappear after 15 seconds
+    @Override
+    protected long getExpirationTime() {
+        return SPEED_BOOST_DURATION * 3; // 15 seconds until expiration (3x the effect duration)
     }
 }
