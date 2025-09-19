@@ -3,14 +3,13 @@ import java.awt.Polygon;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Dog extends Actor {
+public class Dog extends PowerUpActor {
     private static final Color DOG_COLOR = new Color(255, 215, 0); // Golden for bonus points
-    private long spawnTime;
+    private static final int DURATION = 12000; // 12 seconds
     public static final int BONUS_POINTS = 50;
     
     public Dog(Cell inLoc) {
         super(inLoc);
-        this.spawnTime = System.currentTimeMillis();
         color = DOG_COLOR;
         display = new ArrayList<>();
         updateDisplay();
@@ -42,14 +41,36 @@ public class Dog extends Actor {
     public void paint(Graphics g) {
         super.paint(g);
         long currentTime = System.currentTimeMillis();
-        if (currentTime - spawnTime > 8000) {
+        // Start flashing 2/3rds through duration
+        if (currentTime - spawnTime > getExpirationTime() * 2/3) {
             float alpha = (float)(Math.sin((currentTime - spawnTime) / 200.0) + 1) / 2;
             g.setColor(new Color(color.getRed()/255f, color.getGreen()/255f, 
                                color.getBlue()/255f, alpha));
         }
     }
     
-    public boolean isExpired() {
-        return System.currentTimeMillis() - spawnTime > 12000; // Disappear after 12 seconds
+    @Override
+    public long getEffectDuration() {
+        return 0; // Instant effect - just points
+    }
+    
+    @Override
+    public void applyEffect(Snake snake) {
+        // No lasting effect - points are awarded immediately
+    }
+    
+    @Override
+    public int getPointsValue() {
+        return BONUS_POINTS;
+    }
+    
+    @Override
+    public String getEffectDescription() {
+        return "Bonus Points: +" + BONUS_POINTS + " points!";
+    }
+    
+    @Override
+    protected long getExpirationTime() {
+        return DURATION;
     }
 }
