@@ -18,7 +18,8 @@ public class Stage {
     private Grid grid;
     private Snake snake;
     private Apple apple;
-    private List<Bird> backgroundBirds;
+    private GameCollection<Bird> backgroundBirds;
+    private GameCollection<PowerUp> powerUps;
     private boolean gameOver;
     private int score;
     private Random random;
@@ -37,7 +38,8 @@ public class Stage {
         gameOver = false;
         score = 0;
         topScores = new ArrayList<>();
-        backgroundBirds = new ArrayList<>();
+        backgroundBirds = new GameCollection<>(Bird.class);
+        powerUps = new GameCollection<>(PowerUp.class);
         
         for (int i = 0; i < NUM_BACKGROUND_BIRDS; i++) {
             Cell randomCell = grid.cellAtColRow(

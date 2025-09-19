@@ -3,11 +3,12 @@ import java.awt.Polygon;
 import java.awt.Graphics;
 import java.util.ArrayList;
 
-public class Cat extends Actor {
+public class Cat extends Actor implements PowerUp {
     private static final Color CAT_COLOR = new Color(138, 43, 226); // Purple for speed boost
     private long spawnTime;
-    public static final int SPEED_BOOST_DURATION = 5000; // 5 seconds
-    public static final int SPEED_BOOST_AMOUNT = 50; // Reduce delay by 50ms
+    private static final int SPEED_BOOST_DURATION = 5000; // 5 seconds
+    private static final int SPEED_BOOST_AMOUNT = 50; // Reduce delay by 50ms
+    private static final int BONUS_POINTS = 20; // Points awarded for collecting
     
     public Cat(Cell inLoc) {
         super(inLoc);
@@ -48,6 +49,31 @@ public class Cat extends Actor {
                                color.getBlue()/255f, alpha));
         }
     }
+    
+    @Override
+    public boolean isExpired() {
+        return System.currentTimeMillis() - spawnTime > 12000; // Disappear after 12 seconds
+    }
+    
+    @Override
+    public void applyEffect(Snake snake) {
+        // Increase snake speed temporarily
+        snake.setMoveDelay(snake.getMoveDelay() - SPEED_BOOST_AMOUNT);
+    }
+    
+    @Override
+    public long getEffectDuration() {
+        return SPEED_BOOST_DURATION;
+    }
+    
+    @Override
+    public int getPointsValue() {
+        return BONUS_POINTS;
+    }
+    
+    @Override
+    public String getEffectDescription() {
+        return "Speed Boost: Move " + SPEED_BOOST_AMOUNT + "ms faster for " + (SPEED_BOOST_DURATION/1000) + " seconds!";
     
     public boolean isExpired() {
         return System.currentTimeMillis() - spawnTime > 15000; // Disappear after 15 seconds
