@@ -7,15 +7,24 @@ import java.util.Optional;
  * A generic collection class for managing game entities.
  * T must be a subclass of Actor to ensure all entities can be painted and managed.
  */
-public class GameCollection<T extends Actor> {
+public class GameCollection<T extends Actor> implements Iterable<T> {
     private List<T> entities;
+    private Class<T> type;
     
-    public GameCollection() {
-        entities = new ArrayList<>();
+    public GameCollection(Class<T> type) {
+        this.type = type;
+        this.entities = new ArrayList<>();
+    }
+    
+    @Override
+    public java.util.Iterator<T> iterator() {
+        return entities.iterator();
     }
     
     public void add(T entity) {
-        entities.add(entity);
+        if (entity != null && type.isInstance(entity)) {
+            entities.add(entity);
+        }
     }
     
     public void remove(T entity) {
