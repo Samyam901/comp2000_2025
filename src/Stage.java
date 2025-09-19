@@ -1,7 +1,9 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.Collections;
@@ -190,8 +192,20 @@ public class Stage {
     }
 
     public void paint(Graphics g, Point mouseLoc) {
-        g.setColor(new Color(50, 150, 50));
-        g.fillRect(0, 0, 2000, 1200); // Large enough to cover most screens in windowed mode
+        // Get the size of the window
+        java.awt.Rectangle bounds = g.getClipBounds();
+        if (bounds == null) {
+            bounds = new java.awt.Rectangle(0, 0, 2000, 1200);
+        }
+        
+        // Create sunset gradient background
+        Graphics2D g2d = (Graphics2D) g;
+        GradientPaint gradient = new GradientPaint(
+            0, 0, new Color(135, 206, 235),    // Sky blue at top
+            0, bounds.height, new Color(255, 190, 150)  // Soft sunset orange at bottom
+        );
+        g2d.setPaint(gradient);
+        g2d.fillRect(0, 0, bounds.width, bounds.height);
         
         for (Bird bird : backgroundBirds) {
             bird.paint(g);
