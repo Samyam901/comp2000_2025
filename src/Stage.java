@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.FontMetrics;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -200,20 +199,6 @@ public class Stage {
         }
     }
     
-    /**
-     * Interpolate between two colors
-     * @param c1 First color
-     * @param c2 Second color
-     * @param fraction Fraction between 0 and 1
-     * @return Interpolated color
-     */
-    private Color interpolateColor(Color c1, Color c2, float fraction) {
-        float r = c1.getRed() + (c2.getRed() - c1.getRed()) * fraction;
-        float g = c1.getGreen() + (c2.getGreen() - c1.getGreen()) * fraction;
-        float b = c1.getBlue() + (c2.getBlue() - c1.getBlue()) * fraction;
-        return new Color(r/255f, g/255f, b/255f);
-    }
-
     private void resetGame() {
         snake = new Snake(grid.cellAtColRow(10, 10).get());
         gameOver = false;
@@ -269,133 +254,23 @@ public class Stage {
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 10, 30);
         
-        // Draw top scores at the right edge
         g.setFont(new Font("Arial", Font.PLAIN, 16));
-        String topScoresHeader = "Top Scores:";
-        java.awt.FontMetrics fm = g.getFontMetrics();
-        int rightMargin = 20; // Space from right edge
-        
-        int x = bounds.width - fm.stringWidth(topScoresHeader) - rightMargin;
-        g.drawString(topScoresHeader, x, 30);
-        
-        // Find the widest score text to align all scores
-        int maxWidth = 0;
-        String[] scoreTexts = new String[topScores.size()];
+        g.drawString("Top Scores:", 800, 30);
         for (int i = 0; i < topScores.size(); i++) {
-            scoreTexts[i] = (i + 1) + ". " + topScores.get(i);
-            maxWidth = Math.max(maxWidth, fm.stringWidth(scoreTexts[i]));
-        }
-        
-        x = bounds.width - maxWidth - rightMargin;
-        for (int i = 0; i < scoreTexts.length; i++) {
-            g.drawString(scoreTexts[i], x, 60 + (i * 25));
+            g.drawString((i + 1) + ". " + topScores.get(i), 800, 60 + (i * 25));
         }
         
         if (gameOver) {
-            // Semi-transparent dark overlay
-            g.setColor(new Color(0, 0, 0, 180));
-            g.fillRect(0, 0, bounds.width, bounds.height);
+            g.setColor(new Color(0, 0, 0, 150));
+            g.fillRect(0, 0, 1024, 720);
             
-            int centerX = bounds.width / 2;
-            int centerY = bounds.height / 2;
-            
-            // Draw decorative box with gradient and rounded corners
-            int boxWidth = 500;
-            int boxHeight = 300;
-            int boxX = centerX - boxWidth/2;
-            int boxY = centerY - boxHeight/2;
-            int cornerRadius = 20;
-            
-            // Save the original state
-            java.awt.Composite originalComposite = g2d.getComposite();
-            
-            // Draw the background with gradient
-            GradientPaint boxGradient = new GradientPaint(
-                boxX, boxY, new Color(40, 40, 40, 230),
-                boxX, boxY + boxHeight, new Color(20, 20, 20, 230)
-            );
-            g2d.setPaint(boxGradient);
-            g2d.setComposite(java.awt.AlphaComposite.getInstance(java.awt.AlphaComposite.SRC_OVER, 0.95f));
-            g2d.fillRoundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius, cornerRadius);
-            
-            // Add subtle inner glow
-            g2d.setColor(new Color(255, 255, 255, 30));
-            g2d.setStroke(new java.awt.BasicStroke(2));
-            g2d.drawRoundRect(boxX + 3, boxY + 3, boxWidth - 6, boxHeight - 6, cornerRadius - 2, cornerRadius - 2);
-            
-            // Draw border with gradient
-            GradientPaint borderGradient = new GradientPaint(
-                boxX, boxY, new Color(255, 255, 255, 100),
-                boxX, boxY + boxHeight, new Color(255, 255, 255, 50)
-            );
-            g2d.setPaint(borderGradient);
-            g2d.setStroke(new java.awt.BasicStroke(2));
-            g2d.drawRoundRect(boxX, boxY, boxWidth, boxHeight, cornerRadius, cornerRadius);
-            
-            // Restore original composite
-            g2d.setComposite(originalComposite);
-            
-            // Game Over text with glow effect
-            String gameOverText = "Game Over!";
-            g.setFont(new Font("Arial", Font.BOLD, 60));
-            FontMetrics gameOverFm = g.getFontMetrics();
-            int gameOverWidth = gameOverFm.stringWidth(gameOverText);
-            
-            // Draw multiple layers for glow effect
-            for (int i = 4; i > 0; i--) {
-                g2d.setColor(new Color(255, 50, 50, 50/i));
-                g2d.drawString(gameOverText, centerX - gameOverWidth/2 + i, centerY - 50 + i);
-                g2d.drawString(gameOverText, centerX - gameOverWidth/2 - i, centerY - 50 - i);
-            }
-            
-            // Main text
-            g2d.setColor(Color.WHITE);
-            g2d.drawString(gameOverText, centerX - gameOverWidth/2, centerY - 50);
-            
-            // Score with modern style
-            g.setFont(new Font("Arial", Font.BOLD, 32));
-            String scoreText = "Final Score: " + score;
-            int textWidth = fm.stringWidth(scoreText);
-            
-            // Score shadow
-            g2d.setColor(new Color(0, 0, 0, 80));
-            g2d.drawString(scoreText, centerX - textWidth/2 + 2, centerY + 20);
-            
-            // Score text with gradient
-            GradientPaint textGradient = new GradientPaint(
-                0, centerY + 20 - fm.getAscent(), Color.WHITE,
-                0, centerY + 20, new Color(200, 200, 200)
-            );
-            g2d.setPaint(textGradient);
-            g2d.drawString(scoreText, centerX - textWidth/2, centerY + 20);
-            
-            // High score notification with animation
-            if (topScores.size() > 0 && score > topScores.get(0)) {
-                g.setFont(new Font("Arial", Font.BOLD, 28));
-                String highScoreText = "New High Score!";
-                textWidth = fm.stringWidth(highScoreText);
-                
-                // Animate color
-                float pulse = (float)(Math.sin(System.currentTimeMillis() / 200.0) + 1) / 2;
-                Color goldColor = new Color(255, 215, 0);
-                Color orangeColor = new Color(255, 140, 0);
-                g2d.setColor(interpolateColor(goldColor, orangeColor, pulse));
-                
-                // Draw with glow
-                for (int i = 3; i > 0; i--) {
-                    g2d.setColor(new Color(255, 215, 0, 50/i));
-                    g2d.drawString(highScoreText, centerX - textWidth/2 + i, centerY + 65);
-                }
-                g2d.drawString(highScoreText, centerX - textWidth/2, centerY + 65);
-            }
-            
-            // Press SPACE prompt with smooth pulsing effect
+            g.setFont(new Font("Arial", Font.BOLD, 40));
+            g.setColor(Color.WHITE);
+            g.drawString("Game Over!", 400, 300);
             g.setFont(new Font("Arial", Font.BOLD, 24));
-            String promptText = "Press SPACE to play again";
-            textWidth = fm.stringWidth(promptText);
-            float alpha = (float)(Math.sin(System.currentTimeMillis() / 400.0) + 1) / 2;
-            g2d.setColor(new Color(1f, 1f, 1f, 0.4f + alpha * 0.6f));
-            g2d.drawString(promptText, centerX - textWidth/2, centerY + 120);
+            g.drawString("Score: " + score, 430, 350);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("Press SPACE to play again", 380, 400);
         }
     }
 }
