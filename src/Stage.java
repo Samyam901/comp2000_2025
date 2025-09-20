@@ -99,7 +99,6 @@ public class Stage {
         if (topScores.size() > MAX_TOP_SCORES) {
             topScores = topScores.subList(0, MAX_TOP_SCORES);
         }
-        // Keep the list sorted and trimmed
         if (topScores.size() > MAX_TOP_SCORES) {
             topScores = topScores.subList(0, MAX_TOP_SCORES);
         }
@@ -116,12 +115,10 @@ public class Stage {
         
         long currentTime = System.currentTimeMillis();
         
-        // Check if it's time to spawn a new dog
         if (currentDog == null && currentTime - lastDogSpawnTime >= DOG_SPAWN_DELAY) {
             spawnDog();
         }
         
-        // Check if current dog should expire
         if (currentDog != null && currentDog.isExpired()) {
             currentDog = null;
         }
@@ -150,7 +147,6 @@ public class Stage {
                 moveDelay = Math.max(MIN_MOVE_DELAY, moveDelay - SPEED_INCREASE);
             }
             
-            // Check for power-up collisions
             if (powerUps != null) {
                 powerUps.getAll().removeIf(powerUp -> {
                     if (powerUp.isExpired()) {
@@ -222,13 +218,11 @@ public class Stage {
     }
 
     public void paint(Graphics g, Point mouseLoc) {
-        // Get the size of the window
         java.awt.Rectangle bounds = g.getClipBounds();
         if (bounds == null) {
             bounds = new java.awt.Rectangle(0, 0, 2000, 1200);
         }
         
-        // Create sunset gradient background
         Graphics2D g2d = (Graphics2D) g;
         GradientPaint gradient = new GradientPaint(
             0, 0, new Color(135, 206, 235),    // Sky blue at top
@@ -245,7 +239,6 @@ public class Stage {
         snake.paint(g);
         apple.paint(g);
         
-        // Paint all power-ups
         if (powerUps != null) {
             powerUps.paintAll(g);
         }
