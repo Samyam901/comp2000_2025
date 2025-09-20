@@ -1,6 +1,6 @@
-# Snake Game with AI Characters
+# Snake Game with Characters
 
-A Java-based snake game featuring AI-controlled characters including birds, cats, and dogs. The game demonstrates object-oriented programming principles including inheritance, generics, and polymorphism, along with advanced Java graphics capabilities.
+A Java-based snake game featuring characters including birds, cats, and dogs. The game demonstrates object-oriented programming principles including inheritance, generics, and polymorphism, along with advanced Java graphics capabilities.
 
 ## Technical Requirements
 - Java Development Kit (JDK) 21 or higher (tested on OpenJDK 21.0.6 LTS)
@@ -10,7 +10,7 @@ A Java-based snake game featuring AI-controlled characters including birds, cats
 ## Game Features
 
 - Classic snake gameplay with modern twists
-- AI-controlled birds that fly across the screen with realistic wing animations
+- Birds that fly across the screen with realistic wing animations
 - Special characters:
   - Cats (purple) - Provide speed boosts
   - Dogs (golden) - Award bonus points
