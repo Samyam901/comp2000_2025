@@ -1,6 +1,11 @@
 # Snake Game with AI Characters
 
-A Java-based snake game featuring AI-controlled characters including birds, cats, and dogs. The game demonstrates object-oriented programming principles including inheritance, generics, and polymorphism.
+A Java-based snake game featuring AI-controlled characters including birds, cats, and dogs. The game demonstrates object-oriented programming principles including inheritance, generics, and polymorphism, along with advanced Java graphics capabilities.
+
+## Technical Requirements
+- Java Development Kit (JDK) 21 or higher (tested on OpenJDK 21.0.6 LTS)
+- Screen resolution of at least 1024x720
+- Graphics card supporting Java2D acceleration (recommended)
 
 ## Game Features
 
@@ -18,11 +23,19 @@ A Java-based snake game featuring AI-controlled characters including birds, cats
 The game uses several key design patterns and OOP concepts:
 
 1. **Inheritance Hierarchy**:
-   - `Actor` base class
-   - `Snake`, `Bird`, `Cat`, and `Dog` subclasses
+   - `Actor` base class for common functionality
+   - `PowerUpActor` abstract class for power-up behavior
+   - `Snake`, `Bird` extend `Actor`
+   - `Cat`, `Dog` extend `PowerUpActor`
    - Each actor has unique behaviors and rendering
 
-2. **Grid System**:
+2. **Type-Safe Collections**:
+   - Generic `GameCollection<T extends Actor>` implementation
+   - Proper type constraints and validation
+   - Iterator support for clean traversal
+   - Efficient entity management
+
+3. **Grid System**:
    - `Grid` manages the game board
    - Uses `Optional<Cell>` for safe cell access
    - Responsive scaling based on window size
@@ -53,10 +66,26 @@ java -cp src Main
 - Space bar to restart after game over
 - Close window to exit
 
-## Requirements
+## Technical Architecture
 
-- Java Development Kit (JDK) 11 or higher
-- Screen resolution of at least 1024x720
+### Core Components
+1. **Graphics Pipeline**:
+   - Java2D rendering with hardware acceleration
+   - Double-buffering for smooth animations
+   - Optimized composite operations
+   - Advanced gradient and transparency effects
+
+2. **Collection Management**:
+   - Type-safe generic collections
+   - Efficient entity lifecycle management
+   - Iterator pattern implementation
+   - Thread-safe operation
+
+3. **Power-up System**:
+   - Abstract factory pattern for power-up creation
+   - Composite pattern for effect management
+   - Observer pattern for state changes
+   - Chain of responsibility for collision handling
 
 ## Implementation Details
 
@@ -89,8 +118,28 @@ java -cp src Main
 ### Score System
 - Basic points for collecting apples
 - Bonus points from Dog power-ups
-- Top 5 scores tracking
-- Score display during gameplay
+- Top 5 scores tracking with right-aligned display
+- Real-time score updates during gameplay
+- High score celebration effects
+
+### Visual Effects
+1. **Game Over Screen**:
+   - Smooth gradient overlay backdrop
+   - Modern rounded-corner dialog box with inner glow
+   - Dynamic text effects with shadows and gradients
+   - Animated high score celebration
+   - Pulsing "Press SPACE" prompt
+   - Professional typography and layout
+
+2. **Background**:
+   - Dynamic sunset gradient background
+   - Smooth color transitions
+   - Optimized rendering performance
+
+3. **Power-up Effects**:
+   - Fade-in/fade-out animations
+   - Visual duration indicators
+   - Particle effects for collection
 
 ## Design Decisions
 
