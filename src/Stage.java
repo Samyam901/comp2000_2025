@@ -254,10 +254,26 @@ public class Stage {
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 10, 30);
         
+        // Draw top scores at the right edge
         g.setFont(new Font("Arial", Font.PLAIN, 16));
-        g.drawString("Top Scores:", 800, 30);
+        String topScoresHeader = "Top Scores:";
+        java.awt.FontMetrics fm = g.getFontMetrics();
+        int rightMargin = 20; // Space from right edge
+        
+        int x = bounds.width - fm.stringWidth(topScoresHeader) - rightMargin;
+        g.drawString(topScoresHeader, x, 30);
+        
+        // Find the widest score text to align all scores
+        int maxWidth = 0;
+        String[] scoreTexts = new String[topScores.size()];
         for (int i = 0; i < topScores.size(); i++) {
-            g.drawString((i + 1) + ". " + topScores.get(i), 800, 60 + (i * 25));
+            scoreTexts[i] = (i + 1) + ". " + topScores.get(i);
+            maxWidth = Math.max(maxWidth, fm.stringWidth(scoreTexts[i]));
+        }
+        
+        x = bounds.width - maxWidth - rightMargin;
+        for (int i = 0; i < scoreTexts.length; i++) {
+            g.drawString(scoreTexts[i], x, 60 + (i * 25));
         }
         
         if (gameOver) {
