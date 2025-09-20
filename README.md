@@ -23,17 +23,39 @@ A Java-based snake game featuring AI-controlled characters including birds, cats
 The game uses several key design patterns and OOP concepts:
 
 1. **Inheritance Hierarchy**:
-   - `Actor` base class for common functionality
-   - `PowerUpActor` abstract class for power-up behavior
-   - `Snake`, `Bird` extend `Actor`
-   - `Cat`, `Dog` extend `PowerUpActor`
-   - Each actor has unique behaviors and rendering
+   The game utilizes inheritance to create a flexible and maintainable actor system:
+   - `Actor` base class provides common functionality like position, movement, and rendering
+   - `PowerUpActor` abstract class extends `Actor` to add power-up specific behaviors:
+     * Defines abstract methods like `applyEffect()` and `getPointsValue()`
+     * Implements common power-up logic like expiration timing
+     * Enforces consistent power-up behavior across subclasses
+   - `Snake`, `Bird` extend `Actor` with specialized behaviors:
+     * `Bird` adds wing animation and flight patterns
+     * `Snake` implements growing, collision detection, and direction control
+   - `Cat`, `Dog` extend `PowerUpActor` with unique effects:
+     * `Cat` implements speed boost effects
+     * `Dog` implements bonus point mechanics
+   This inheritance structure contributed to good design by:
+   - Reducing code duplication through shared base functionality
+   - Ensuring consistent behavior through abstract methods
+   - Allowing easy addition of new actors and power-ups
+   - Enabling polymorphic handling of different actor types
 
-2. **Type-Safe Collections**:
-   - Generic `GameCollection<T extends Actor>` implementation
-   - Proper type constraints and validation
-   - Iterator support for clean traversal
-   - Efficient entity management
+2. **Generic Collections**:
+   Generics improved the design through type-safe and reusable collections:
+   - `GameCollection<T extends Actor>` provides type-safe actor management:
+     * Ensures only valid actor types can be added
+     * Prevents runtime type errors through compile-time checking
+     * Enables reuse for different actor types (birds, power-ups)
+   - Type constraints enforce proper usage:
+     * `T extends Actor` ensures all collection elements have actor capabilities
+     * Collection methods preserve type information
+     * Iterator implementation maintains type safety
+   This generic approach contributed to good design by:
+   - Eliminating need for type casting
+   - Catching type errors at compile time
+   - Providing reusable collection functionality
+   - Enabling type-specific operations without code duplication
 
 3. **Grid System**:
    - `Grid` manages the game board
